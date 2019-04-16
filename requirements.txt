@@ -1,0 +1,4 @@
+tweepy
+configparser
+kafka
+simplejson

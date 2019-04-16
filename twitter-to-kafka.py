@@ -8,7 +8,7 @@ import base64
 import datetime
 import os
 import logging
-import ConfigParser
+from backports import configparser
 import simplejson as json
 from tweepy import OAuthHandler
 from tweepy import Stream
@@ -18,7 +18,7 @@ from kafka import KafkaProducer
 # Get your twitter credentials from the environment variables.
 # These are set in the 'twitter-stream.json' manifest file.
 
-config = ConfigParser.RawConfigParser()
+config = configparser.RawConfigParser()
 config.read('config.cfg')
 
 CONSUMER_KEY = config.get('Twitter', 'consumer_key')
@@ -45,8 +45,7 @@ class StdOutListener(StreamListener):
         print(str_tweet)
 
     def on_error(self, status):
-        print status
-
+        print(status)
 
 if __name__ == '__main__':
     logging.basicConfig(
@@ -58,7 +57,7 @@ if __name__ == '__main__':
     auth = OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
     auth.set_access_token(ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
 
-    print 'stream mode is: %s' % TWITTER_STREAMING_MODE
+    print('stream mode is: %s' % TWITTER_STREAMING_MODE)
 
     stream = Stream(auth, listener)
     # set up the streaming depending upon whether our mode is 'sample', which

@@ -21,20 +21,21 @@ from kafka import KafkaProducer
 config = configparser.RawConfigParser()
 config.read('config.cfg')
 
-CONSUMER_KEY = config.get('Twitter', 'consumer_key')
-CONSUMER_SECRET = config.get('Twitter', 'consumer_secret')
-ACCESS_TOKEN = config.get('Twitter', 'access_token')
-ACCESS_TOKEN_SECRET = config.get('Twitter', 'access_token_secret')
-TWITTER_STREAMING_MODE = config.get('Twitter', 'streaming_mode')
-KAFKA_ENDPOINT = '{0}:{1}'.format(config.get('Kafka', 'kafka_endpoint'), config.get('Kafka', 'kafka_endpoint_port'))
-KAFKA_TOPIC = config.get('Kafka', 'topic')
+CONSUMER_KEY = os.environ.get('CONSUMER_KEY')
+CONSUMER_SECRET = os.environ.get('CONSUMER_SECRET')
+ACCESS_TOKEN = os.environ.get('ACCESS_TOKEN')
+ACCESS_TOKEN_SECRET = os.environ.get('ACCESS_TOKEN_SECRET')
+TWITTER_STREAMING_MODE = os.environ.get('TWITTER_STREAMING_MODE')
+KAFKA_ENDPOINT = os.environ.get('KAFKA_ENDPOINT')
+KAFKA_TOPIC = os.environ.get('KAFKA_TOPIC')
+SEARCH_TERM = os.environ.get('SEARCH_TERM')
 NUM_RETRIES = 3
 
 class StdOutListener(StreamListener):
     """A listener handles tweets that are received from the stream.
     This listener dumps the tweets into a Kafka topic
     """
-
+    
     producer = KafkaProducer(bootstrap_servers=KAFKA_ENDPOINT)
 
     def on_data(self, data):
@@ -67,4 +68,4 @@ if __name__ == '__main__':
     if TWITTER_STREAMING_MODE == 'sample':
         stream.sample()
     else:
-        stream.filter(track=['google'])
+        stream.filter(track=[SEARCH_TERM])

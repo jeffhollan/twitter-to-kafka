@@ -4,3 +4,4 @@
 # Files
 config.prod.cfg
 env/
+.env

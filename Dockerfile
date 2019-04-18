@@ -4,4 +4,4 @@ COPY . /app
 WORKDIR /app
 
 RUN pip install -r requirements.txt
-CMD ["python", "twitter-to-kafka.py"]
+CMD ["python", "twitter-to-queue.py"]

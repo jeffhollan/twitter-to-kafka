@@ -13,7 +13,8 @@ import simplejson as json
 from tweepy import OAuthHandler
 from tweepy import Stream
 from tweepy.streaming import StreamListener
-from kafka import KafkaProducer
+from azure.storage.queue import QueueService
+
 
 # Get your twitter credentials from the environment variables.
 # These are set in the 'twitter-stream.json' manifest file.
@@ -26,23 +27,24 @@ CONSUMER_SECRET = os.environ.get('CONSUMER_SECRET')
 ACCESS_TOKEN = os.environ.get('ACCESS_TOKEN')
 ACCESS_TOKEN_SECRET = os.environ.get('ACCESS_TOKEN_SECRET')
 TWITTER_STREAMING_MODE = os.environ.get('TWITTER_STREAMING_MODE')
-KAFKA_ENDPOINT = os.environ.get('KAFKA_ENDPOINT')
-KAFKA_TOPIC = os.environ.get('KAFKA_TOPIC')
 SEARCH_TERM = os.environ.get('SEARCH_TERM')
+QUEUE_NAME = os.environ.get('QUEUE_NAME')
 NUM_RETRIES = 3
+
+queue_service = QueueService(account_name=os.environ.get('STORAGE_ACCOUNT_NAME'), account_key=os.environ.get('STORAGE_ACCOUNT_KEY'))
+
 
 class StdOutListener(StreamListener):
     """A listener handles tweets that are received from the stream.
     This listener dumps the tweets into a Kafka topic
     """
-    
-    producer = KafkaProducer(bootstrap_servers=KAFKA_ENDPOINT)
+    # producer = KafkaProducer(bootstrap_servers=KAFKA_ENDPOINT)
 
     def on_data(self, data):
         """What to do when tweet data is received."""
         data_json = json.loads(data)
-        str_tweet = data_json['text'].encode('utf-8')
-        self.producer.send(KAFKA_TOPIC, str_tweet)
+        str_tweet = data_json['text']
+        queue_service.put_message(QUEUE_NAME, str_tweet)
         print(str_tweet)
 
     def on_error(self, status):

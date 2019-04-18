@@ -1,4 +1,4 @@
 tweepy
 configparser
-kafka
 simplejson
+azure-storage-queue

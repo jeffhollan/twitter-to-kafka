@@ -41,9 +41,8 @@ class StdOutListener(StreamListener):
     def on_data(self, data):
         """What to do when tweet data is received."""
         data_json = json.loads(data)
-        str_tweet = data_json['text'].encode('utf-8')
-        self.producer.send(KAFKA_TOPIC, str_tweet)
-        print(str_tweet)
+        self.producer.send(KAFKA_TOPIC, json.dumps(data_json).encode('utf-8'))
+        print(json.dumps(data_json))
 
     def on_error(self, status):
         print(status)
